@@ -1,65 +1,85 @@
 import Head from 'next/head'
+import { useState } from 'react'
+import FormInputView, { INPUT_TYPE } from '../components/FormInputView'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
+
+  const [formData, setFormData] = useState({
+    fullName: { value: '', error: '', required: true },
+    mobileNumber: { value: '', error: '', required: true },
+    image: { value: '', error: '', required: true },
+  })
+
+  const updateFormData = (name, newValue) => {
+    setFormData({
+      ...formData,
+      [name]: {
+        value: newValue,
+        error: '',
+        required: formData[name].required
+      },
+    });
+  };
+
+  const isValidForm = () => {
+    let newFormData = formData;
+
+    var isValid = true;
+    Object.keys(formData).forEach((key) => {
+      if (formData[key].required && !formData[key].value) {
+        isValid = false;
+        formData[key].error = 'Required';
+      }
+    });
+
+    setFormData({ ...formData, ...newFormData });
+    return isValid
+  };
+
+  const submitForm = () => {
+    isValidForm()
+    console.log(formData);
+  }
+
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <FormInputView
+        name='fullName'
+        displayName='Full Name'
+        placeholder='Enter your full name'
+        value={formData.fullName.value}
+        error={formData.fullName.error}
+        onValueChange={updateFormData}
+        inputType={INPUT_TYPE.text}
+      />
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <br />
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+      <FormInputView
+        name='mobileNumber'
+        displayName='Mobile Number'
+        placeholder='Enter your mobile number'
+        value={formData.mobileNumber.value}
+        error={formData.mobileNumber.error}
+        onValueChange={updateFormData}
+        inputType={INPUT_TYPE.number}
+        maxLength={10}
+      />
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+      <br />
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+      <FormInputView
+        name='image'
+        displayName='Image'
+        value={formData.image.value}
+        error={formData.image.error}
+        onValueChange={updateFormData}
+        onFileSelect={() => { }}
+        inputType={INPUT_TYPE.file}
+      />
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+      <button onClick={submitForm}>Submit</button>
     </div>
   )
 }
